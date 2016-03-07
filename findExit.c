@@ -51,7 +51,7 @@ void putarBalik()
 //gerak mengikuti garis hitam
 void maju()
 {
-		lineTrackLeft(colorSensor, 50, 50, 0);
+		lineTrackLeft(colorSensor, 30, 30, 0);
 }
 
 //gerakan oriental********************************************************
@@ -147,6 +147,101 @@ void barat()
 	orientasi = 3;
 }
 
+//bergerak memutar balik dan mengganti orientasi
+void buntu()
+{
+	if(orientasi == 0)
+	{
+		selatan();
+	}
+	else if(orientasi == 1)
+	{
+		barat();
+	}
+	else if(orientasi == 2)
+	{
+		utara();
+	}
+	else if(orientasi == 3)
+	{
+		timur();
+	}
+}
+
+//cariJalan******************************************************************
+
+
+//cek apakah ada jalan lurus
+void cekLurus()
+{
+	setMotorSpeed(leftMotor, 50);
+	setMotorSpeed(rightMotor, 50);
+	sleep(600);
+	if(getColorName(colorSensor)==colorBlack)
+	{
+		//placeHolder
+		setMotorSpeed(leftMotor, 0);
+		setMotorSpeed(rightMotor, 0);
+		sleep(3000);
+	}
+
+	//balik lagi
+	setMotorSpeed(leftMotor, -50);
+	setMotorSpeed(rightMotor, -50);
+	sleep(600);
+}
+
+//cek apakah ada jalan kanan
+void cekKanan()
+{
+	setMotorSpeed(leftMotor, 60);
+	setMotorSpeed(rightMotor, 30);
+	sleep(800);
+	if(getColorName(colorSensor)==colorBlack)
+	{
+		//placeHolder
+		setMotorSpeed(leftMotor, 0);
+		setMotorSpeed(rightMotor, 0);
+		sleep(3000);
+	}
+
+	//balik lagi
+	setMotorSpeed(leftMotor, -60);
+	setMotorSpeed(rightMotor, -30);
+	sleep(800);
+}
+
+//cek apakah ada jalan kiri
+void cekKiri()
+{
+	setMotorSpeed(leftMotor, 0);
+	setMotorSpeed(rightMotor, 50);
+	sleep(300);
+	if(getColorName(colorSensor)==colorBlack)
+	{
+		//placeHolder
+		setMotorSpeed(leftMotor, 0);
+		setMotorSpeed(rightMotor, 0);
+		sleep(3000);
+	}
+
+		//balik lagi
+	setMotorSpeed(leftMotor, 0);
+	setMotorSpeed(rightMotor, -50);
+	sleep(300);
+}
+
+void cekSimpangan()
+{
+	setMotorSpeed(leftMotor, 0);
+	setMotorSpeed(rightMotor, 0);
+	sleep(500);
+
+	cekLurus();
+	cekKanan();
+	cekKiri();
+}
+
 //gerakan yang dilakukan robot***********************************************
 void gerak()
 {
@@ -158,11 +253,11 @@ void gerak()
 		}
 		else if(getColorName(colorSensor)==colorGreen)
 		{
-
+			cekSimpangan();
 		}
 		else if(getColorName(colorSensor)==colorRed)
 		{
-
+			buntu();
 		}
 		else //warna item
 		{
