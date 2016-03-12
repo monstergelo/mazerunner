@@ -36,20 +36,11 @@ void Add_Anak(int Id, int L , int M , int R);
 
 int Aloc(int Id, int Pa);
 
-void lurus();
-void belokKanan();
-void belokKiri();
 void putarBalik();
 void maju();
-void utara();
-void timur();
-void selatan();
-void barat();
-void buntu();
 void gerak();
 bool cekLurus();
 bool cekKanan();
 bool cekKiri();
-void cekSimpangan();
 void Next_Node();
 void Next_Node_Parent();
