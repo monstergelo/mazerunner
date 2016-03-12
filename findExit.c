@@ -51,7 +51,9 @@ void putarBalik()
 //gerak mengikuti garis hitam
 void maju()
 {
-		lineTrackLeft(colorSensor, 30, 30, 0);
+	float temp = (float) getColorReflected(colorSensor) * 2 / 5 + 20;
+	motor[leftMotor]  = temp;
+	motor[rightMotor] = 80 - temp;
 }
 
 //gerakan oriental********************************************************
@@ -195,7 +197,7 @@ void cekLurus()
 void cekKanan()
 {
 	setMotorSpeed(leftMotor, 60);
-	setMotorSpeed(rightMotor, 30);
+	setMotorSpeed(rightMotor, 40);
 	sleep(800);
 	if(getColorName(colorSensor)==colorBlack)
 	{
@@ -206,9 +208,9 @@ void cekKanan()
 	}
 
 	//balik lagi
-	setMotorSpeed(leftMotor, -60);
-	setMotorSpeed(rightMotor, -30);
-	sleep(800);
+	//setMotorSpeed(leftMotor, -60);
+	//setMotorSpeed(rightMotor, -40);
+	//sleep(800);
 }
 
 //cek apakah ada jalan kiri
@@ -233,10 +235,6 @@ void cekKiri()
 
 void cekSimpangan()
 {
-	setMotorSpeed(leftMotor, 0);
-	setMotorSpeed(rightMotor, 0);
-	sleep(500);
-
 	cekLurus();
 	cekKanan();
 	cekKiri();
