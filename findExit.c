@@ -31,16 +31,16 @@ void putarBalik()
 {
 	back = 1;
 	setMotorSpeed(rightMotor, 0);
-	setMotorSpeed(leftMotor, 50);
+	setMotorSpeed(leftMotor, 70);
 	sleep(1000);
 }
 
 //gerak mengikuti garis hitam
 void maju()
 {
-	float temp = (float) getColorReflected(colorSensor)  * 2 / 5 + 20;
-	motor[leftMotor]  = 20 + temp;
-	motor[rightMotor] = 20 + 60 - temp;
+	float temp = (float) getColorReflected(colorSensor) * 2+ 20;
+	motor[leftMotor]  = temp;
+	motor[rightMotor] = 220 - temp;
 }
 
 //cariJalan******************************************************************
@@ -93,7 +93,7 @@ bool cekKanan()
 {
 	bool is_node = false;
 	setMotorSpeed(leftMotor, 60);
-	setMotorSpeed(rightMotor, 27);
+	setMotorSpeed(rightMotor, 23);
 	sleep(1000);
 	if(getColorName(colorSensor)==colorBlack)
 	{
@@ -131,7 +131,7 @@ void Next_Node() {
 		}
 		else {
 			setMotorSpeed(leftMotor, -60);
-			setMotorSpeed(rightMotor, -25);
+			setMotorSpeed(rightMotor, -23);
 			sleep(1000);
 
 			if (cekLurus()) {
@@ -197,9 +197,9 @@ task main()
 		mem[i].Right = -1;
 		mem[i].Parent = -1;
 	}
-	setMotorSpeed(leftMotor, 50);
-	setMotorSpeed(rightMotor, 50);
-	sleep(3000);
+	setMotorSpeed(leftMotor, 100);
+	setMotorSpeed(rightMotor, 100);
+	sleep(1000);
 	setMotorSpeed(rightMotor, 50);
 	setMotorSpeed(leftMotor, 0);
 	sleep(300);
