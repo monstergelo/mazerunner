@@ -36,6 +36,7 @@ void Add_Anak(int Id, int L , int M , int R);
 
 int Aloc(int Id, int Pa);
 
+void free_mem();
 void putarBalik();
 void maju();
 void gerak();

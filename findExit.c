@@ -32,15 +32,25 @@ void putarBalik()
 	back = 1;
 	setMotorSpeed(rightMotor, 0);
 	setMotorSpeed(leftMotor, 50);
-	sleep(1000);
+	sleep(1500);
 }
 
 //gerak mengikuti garis hitam
 void maju()
 {
-	float temp = (float) getColorReflected(colorSensor)  * 2 / 5 + 20;
-	motor[leftMotor]  = 20 + temp;
-	motor[rightMotor] = 20 + 60 - temp;
+	float temp = (float) getColorReflected(colorSensor) *3/5  + 20;
+
+	if(getColorReflected(colorSensor) >= 90)
+	{
+		motor[rightMotor]  = 40;
+		motor[leftMotor] = 0;
+		sleep(500);
+	}
+	else
+	{
+		motor[leftMotor]  =  40 + temp;
+		motor[rightMotor] =  40 + 60 - temp;
+	}
 }
 
 //cariJalan******************************************************************
@@ -80,7 +90,7 @@ bool cekLurus()
 	bool is_node = false;
 	setMotorSpeed(leftMotor, 60);
 	setMotorSpeed(rightMotor, 60);
-	sleep(600);
+	sleep(650);
 	if(getColorName(colorSensor)==colorBlack)
 	{
 		is_node = true;
@@ -121,26 +131,54 @@ bool cekKiri()
 // Node mana lagi yang perlu dijalankan. Jika anak kanan sudah, maka selanjutnya lurus,
 //Jika lurus sudah maka selanjutnya anak kiri.
 void Next_Node() {
+	int prev_node = current_node;
 	current_node = mem[current_node].Parent;
 	int Kanan = -1, Kiri = -1, Lurus = -1;
-	if (cekKanan()) {
-		Lurus = Aloc(node_id, current_node);
-		Add_Anak(current_node, Kiri, Lurus, Kanan);
-		current_node = mem[current_node].Mid;
-		node_id++;
-		}
-		else {
-			setMotorSpeed(leftMotor, -60);
-			setMotorSpeed(rightMotor, -25);
-			sleep(1000);
-
-			if (cekLurus()) {
-			Kiri = Aloc(node_id, current_node);
+	if (prev_node == mem[current_node].Right) {
+		if (cekKanan()) {
+			Lurus = Aloc(node_id, current_node);
 			Add_Anak(current_node, Kiri, Lurus, Kanan);
-			current_node = mem[current_node].Left;
+			current_node = mem[current_node].Mid;
 			node_id++;
 			}
-		}
+			else {
+				setMotorSpeed(leftMotor, -60);
+				setMotorSpeed(rightMotor, -27);
+				sleep(1000);
+
+				if (cekLurus()) {
+				Kiri = Aloc(node_id, current_node);
+				Add_Anak(current_node, Kiri, Lurus, Kanan);
+				current_node = mem[current_node].Left;
+				node_id++;
+				}
+				else {
+					if (cekKiri()) {
+						back = 1;
+					}
+				}
+			}
+	}
+	else if (prev_node == mem[current_node].Mid) {
+		if (cekKanan()) {
+			Kiri = Aloc(node_id, current_node);
+			Add_Anak(current_node, Kiri, Lurus, Kanan);
+			current_node = mem[current_node].Mid;
+			node_id++;
+			}
+			else {
+				setMotorSpeed(leftMotor, -60);
+				setMotorSpeed(rightMotor, -25);
+				sleep(1000);
+
+				if (cekLurus()) {
+						back = 1;
+				}
+			}
+	}
+	else if (cekKanan()) {
+						back = 1;
+	}
 }
 
 void Next_Node_Parent() {
@@ -188,7 +226,6 @@ task main()
 	node_id = 0;
 	current_node = 0;
 	back = 0;
-	//maju dikit biar kaga kena biru
 	int i;
 	for (i = 0; i < 100; i++) {
 		mem[i].Id = -1;
@@ -197,12 +234,15 @@ task main()
 		mem[i].Right = -1;
 		mem[i].Parent = -1;
 	}
-	setMotorSpeed(leftMotor, 50);
-	setMotorSpeed(rightMotor, 50);
-	sleep(3000);
-	setMotorSpeed(rightMotor, 50);
-	setMotorSpeed(leftMotor, 0);
-	sleep(300);
+
+	//maju dikit biar kaga kena bir
+	//setMotorSpeed(leftMotor, 50);
+	//setMotorSpeed(rightMotor, 50);
+	//sleep(3000);
+	//belok dikit
+	//setMotorSpeed(rightMotor, 50);
+	//setMotorSpeed(leftMotor, 0);
+	//sleep(300);
 
 	current_node = Aloc(node_id, Nil);
 	node_id++;
