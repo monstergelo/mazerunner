@@ -109,8 +109,8 @@ void gerak()
 				}
 			}
 			else {
-				Next_Node();
 				is_mundur = 0;
+				Next_Node();
 			}
 		}
 		else if(getColorName(colorSensor)==colorRed)
