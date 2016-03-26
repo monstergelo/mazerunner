@@ -29,7 +29,7 @@ int Aloc(int Id, int Pa)
 //bergerak memutar balik robot
 void putarBalik()
 {
-	pop();
+	Pop();
 	back = 1;
 	setMotorSpeed(rightMotor, 0);
 	setMotorSpeed(leftMotor, 50);
@@ -44,13 +44,13 @@ void putarKembali()
 }
 
 //stackPsudo----------------------------------------------------------------
-void push(int i)
+void Push(int i)
 {
 	sMem.data[sMem.top].Id = i;
 	sMem.top = (sMem.top) + 1;
 }
 
-int pop()
+int Pop()
 {
 	sMem.top= (sMem.top) - 1;
 	return sMem.data[sMem.top].Id;
@@ -58,7 +58,7 @@ int pop()
 
 void backStep()
 {
-	int jalan = pop();
+	int jalan = Pop();
 //0, kiri
 //1, lurus
 //2, kanan
@@ -212,7 +212,7 @@ void Next_Node() {
 	int Kanan = -1, Kiri = -1, Lurus = -1;
 	if (prev_node == mem[current_node].Right) {
 		if (cekKanan()) {
-			push(1);
+			Push(1);
 			Lurus = Aloc(node_id, current_node);
 			Add_Anak(current_node, Kiri, Lurus, Kanan);
 			current_node = mem[current_node].Mid;
@@ -224,7 +224,7 @@ void Next_Node() {
 			sleep(1000);
 
 			if (cekLurus()) {
-			push(0);
+			Push(0);
 			Kiri = Aloc(node_id, current_node);
 			Add_Anak(current_node, Kiri, Lurus, Kanan);
 			current_node = mem[current_node].Left;
@@ -232,7 +232,7 @@ void Next_Node() {
 			}
 			else {
 				if (cekKiri()) {
-					pop();
+					Pop();
 					back = 1;
 				}
 			}
@@ -240,7 +240,7 @@ void Next_Node() {
 	}
 	else if (prev_node == mem[current_node].Mid) {
 		if (cekKanan()) {
-			push(0);
+			Push(0);
 			Kiri = Aloc(node_id, current_node);
 			Add_Anak(current_node, Kiri, Lurus, Kanan);
 			current_node = mem[current_node].Mid;
@@ -252,13 +252,13 @@ void Next_Node() {
 				sleep(1000);
 
 				if (cekLurus()) {
-						pop();
+						Pop();
 						back = 1;
 				}
 			}
 	}
 	else if (cekKanan()) {
-						pop();
+						Pop();
 						back = 1;
 	}
 }
@@ -266,7 +266,7 @@ void Next_Node() {
 void Next_Node_Parent() {
 	int Kanan = -1, Kiri = -1, Lurus = -1;
 	if (cekKanan()) {
-		push(2);
+		Push(2);
 		Kanan = Aloc(node_id, current_node);
 		Add_Anak(current_node, Kiri, Lurus, Kanan);
 		current_node = mem[current_node].Right;
@@ -278,7 +278,7 @@ void Next_Node_Parent() {
 		sleep(1000);
 
 		if (cekLurus()) {
-		push(1);
+		Push(1);
 		Lurus = Aloc(node_id, current_node);
 		Add_Anak(current_node, Kiri, Lurus, Kanan);
 		current_node = mem[current_node].Mid;
@@ -290,7 +290,7 @@ void Next_Node_Parent() {
 			sleep(1000);
 
 			if (cekKiri()) {
-			push(0);
+			Push(0);
 			Kiri = Aloc(node_id, current_node);
 			Add_Anak(current_node, Kiri, Lurus, Kanan);
 			current_node = mem[current_node].Left;
