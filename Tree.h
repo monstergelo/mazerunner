@@ -53,3 +53,26 @@ bool cekKiri();
 void cekSimpangan();
 void Next_Node();
 void Next_Node_Parent();
+
+
+//=======================================================================================
+//stack, untuk balik kembali
+
+//Id menunjukkan gerakan yang dilakukan
+//0, kiri
+//1, lurus
+//2, kanan
+typedef struct stackNode {
+	int Id;
+} sNode;
+
+typedef struct {
+		sNode data[50];
+		int top;
+} stack;
+
+stack sMem;
+
+void push(int i);
+int pop();
+void backStep();
