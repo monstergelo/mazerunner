@@ -40,7 +40,7 @@ void maju()
 {
 	float temp = (float) getColorReflected(colorSensor) *3/5  + 20;
 
-	if(getColorReflected(colorSensor) >= 90)
+	if(getColorReflected(colorSensor) >= 95)
 	{
 		motor[rightMotor]  = 40;
 		motor[leftMotor] = 0;
@@ -88,7 +88,7 @@ void gerak()
 bool cekLurus()
 {
 	bool is_node = false;
-	setMotorSpeed(leftMotor, 60);
+	setMotorSpeed(leftMotor, 61);
 	setMotorSpeed(rightMotor, 60);
 	sleep(650);
 	if(getColorName(colorSensor)==colorBlack)
