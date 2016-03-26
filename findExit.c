@@ -5,14 +5,8 @@
 int node_id;
 int current_node;
 int back;
-//variabel=====================================================
-int orientasi = 0; //untuk ngecek untuk ke utara, barat, timur, selatan harus belok apa
-									 //0 = robot sedang menghadap utara, 1 = timur, 2 = selatan, 3 = barat
-									 //karena perubangan orientasi hanya saat persimpangan, belokan tanpa simpangan
- 									 //dianggap lurus
-
 //fungsi=======================================================
-
+//listPsudo--------------------------------------------------
 void Add_Anak(int Id, int L, int M, int R)
 /*Menambahkan anak kiri, kanan, dan tengah ke sebuah node Id,
 */
@@ -32,163 +26,86 @@ int Aloc(int Id, int Pa)
 	return Id;
 }
 
-//gerakan dasar***********************************************************
-//gerak lurus pada persimpangan
-void lurus()
-{
-	setMotorSpeed(leftMotor, 50);
-	setMotorSpeed(rightMotor, 50);
-	sleep(1000);
-}
-
-//belok kanan pada persimpangan
-void belokKanan()
-{
-	setMotorSpeed(leftMotor, 60);
-	setMotorSpeed(rightMotor, 35);
-	sleep(1000);
-}
-
-//belok kiri pada persimpangan
-void belokKiri()
-{
-	setMotorSpeed(rightMotor, 35);
-	setMotorSpeed(leftMotor, 60);
-	sleep(1000);
-}
-
 //bergerak memutar balik robot
 void putarBalik()
 {
+	pop();
 	back = 1;
 	setMotorSpeed(rightMotor, 0);
 	setMotorSpeed(leftMotor, 50);
-	sleep(1000);
+	sleep(1500);
 }
 
-//gerak mengikuti garis hitam
-void maju()
+void putarKembali()
 {
-	float temp = (float) getColorReflected(colorSensor)  * 2 / 5 + 20;
-	motor[leftMotor]  = temp;
-	motor[rightMotor] = 60 - temp;
+	setMotorSpeed(rightMotor, 0);
+	setMotorSpeed(leftMotor, 50);
+	sleep(1500);
 }
 
-//gerakan oriental********************************************************
-//bergerak ke utara
-void utara()
+//stackPsudo----------------------------------------------------------------
+void push(int i)
 {
-	if(orientasi == 0)
-	{
-		lurus();
-	}
-	else if(orientasi == 1)
-	{
-		belokKiri();
-	}
-	else if(orientasi == 2)
-	{
-		putarBalik();
-	}
-	else if(orientasi == 3)
-	{
-		belokKanan();
-	}
-	//set orientasi baru
-	orientasi = 0;
+	sMem.data[sMem.top].Id = i;
+	sMem.top = (sMem.top) + 1;
 }
 
-//bergerak ke timur
-void timur()
+int pop()
 {
-	if(orientasi == 0)
-	{
-		belokKanan();
-	}
-	else if(orientasi == 1)
-	{
-		lurus();
-	}
-	else if(orientasi == 2)
-	{
-		belokKiri();
-	}
-	else if(orientasi == 3)
-	{
-		putarBalik();
-	}
-	//set orientasi baru
-	orientasi = 1;
+	sMem.top= (sMem.top) - 1;
+	return sMem.data[sMem.top].Id;
 }
 
-//bergerak ke selatan
-void selatan()
+void backStep()
 {
-	if(orientasi == 0)
+	int jalan = pop();
+//0, kiri
+//1, lurus
+//2, kanan
+	if(jalan == 2)
 	{
-		putarBalik();
+		setMotorSpeed(leftMotor, 0);
+		setMotorSpeed(rightMotor, 50);
+		sleep(1000);
 	}
-	else if(orientasi == 1)
+	else if(jalan == 1)
 	{
-		belokKanan();
+		setMotorSpeed(leftMotor, 61);
+		setMotorSpeed(rightMotor, 60);
+		sleep(650);
 	}
-	else if(orientasi == 2)
+	else if(jalan == 0)
 	{
-		lurus();
+		setMotorSpeed(leftMotor, 60);
+		setMotorSpeed(rightMotor, 27);
+		sleep(1000);
 	}
-	else if(orientasi == 3)
+	else
 	{
-		belokKiri();
-	}
-	//set orientasi baru
-	orientasi = 2;
-}
-
-//bergerak ke barat
-void barat()
-{
-	if(orientasi == 0)
-	{
-		belokKiri();
-	}
-	else if(orientasi == 1)
-	{
-		putarBalik();
-	}
-	else if(orientasi == 2)
-	{
-		belokKanan();
-	}
-	else if(orientasi == 3)
-	{
-		lurus();
-	}
-	//set orientasi baru
-	orientasi = 3;
-}
-
-//bergerak memutar balik dan mengganti orientasi
-void buntu()
-{
-	if(orientasi == 0)
-	{
-		selatan();
-	}
-	else if(orientasi == 1)
-	{
-		barat();
-	}
-	else if(orientasi == 2)
-	{
-		utara();
-	}
-	else if(orientasi == 3)
-	{
-		timur();
+		setMotorSpeed(leftMotor, 600);
+		setMotorSpeed(rightMotor, 0);
+		sleep(100000);
 	}
 }
 
 //cariJalan******************************************************************
+//gerak mengikuti garis hitam
+void maju()
+{
+	float temp = (float) getColorReflected(colorSensor) *3/5  + 20;
+
+	if(getColorReflected(colorSensor) >= 95)
+	{
+		motor[rightMotor]  = 40;
+		motor[leftMotor] = 0;
+		sleep(500);
+	}
+	else
+	{
+		motor[leftMotor]  =  30 + temp;
+		motor[rightMotor] =  30 + 60 - temp;
+	}
+}
 
 void gerak()
 {
@@ -201,7 +118,6 @@ void gerak()
 		else if(getColorName(colorSensor)==colorGreen)
 		{
 			if (back == 0){
-				cekSimpangan();
 				Next_Node_Parent();
 			}
 			else {
@@ -220,21 +136,41 @@ void gerak()
 	}
 }
 
+void gerakKembali()
+{
+	putarKembali();
+	repeat(forever)
+	{
+		if(getColorName(colorSensor)==colorBlue)
+		{
+			break;
+		}
+		else if(getColorName(colorSensor)==colorGreen)
+		{
+			backStep();
+		}
+		else if(getColorName(colorSensor)==colorRed)
+		{
+			break;
+		}
+		else //warna item
+		{
+			maju();
+		}
+	}
+}
+
 //cek apakah ada jalan lurus
 bool cekLurus()
 {
 	bool is_node = false;
-	setMotorSpeed(leftMotor, 60);
+	setMotorSpeed(leftMotor, 61);
 	setMotorSpeed(rightMotor, 60);
-	sleep(600);
+	sleep(680);
 	if(getColorName(colorSensor)==colorBlack)
 	{
 		is_node = true;
 	}
-	//balik lagi
-	setMotorSpeed(leftMotor, -60);
-	setMotorSpeed(rightMotor, -60);
-	sleep(600);
 	return is_node;
 }
 
@@ -243,15 +179,12 @@ bool cekKanan()
 {
 	bool is_node = false;
 	setMotorSpeed(leftMotor, 60);
-	setMotorSpeed(rightMotor, 30);
+	setMotorSpeed(rightMotor, 29);
 	sleep(1000);
 	if(getColorName(colorSensor)==colorBlack)
 	{
 		is_node = true;
 	}
-	setMotorSpeed(leftMotor, -60);
-	setMotorSpeed(rightMotor, -30);
-	sleep(1000);
 	return is_node;
 }
 
@@ -266,89 +199,124 @@ bool cekKiri()
 	{
 		is_node = true;
 	}
-	//balik lagi
-	setMotorSpeed(leftMotor, -0);
-	setMotorSpeed(rightMotor, -55);
-	sleep(1000);
 	return is_node;
 }
-
-void cekSimpangan()
-{
-	int Kanan = -1, Kiri = -1, Lurus = -1;
-	if (cekKanan()) {
-		Kanan = Aloc(node_id, current_node);
-		node_id++;
-	}
-	if (cekLurus()) {
-		Lurus = Aloc(node_id, current_node);
-		node_id++;
-	}
-	if (cekKiri()) {
-		Kiri = Aloc(node_id, current_node);
-		node_id++;
-	}
-	Add_Anak(current_node, Kiri, Lurus, Kanan);
-}
-
 
 //Robot sudah menyusuri sebuah jalur namun belum bertemu solusi
 // lalu balik lagi ke persimpangan sebelumnya. Prosedur void memberitahu robot
 // Node mana lagi yang perlu dijalankan. Jika anak kanan sudah, maka selanjutnya lurus,
 //Jika lurus sudah maka selanjutnya anak kiri.
 void Next_Node() {
-	int Parent = mem[current_node].Parent;
-	//Dari kanan
- if (mem[Parent].Right == current_node) {
-		//Ke lurus
-		if (mem[Parent].Mid != -1) {
-			setMotorSpeed(leftMotor, 0);
-			setMotorSpeed(rightMotor, 0);
-			sleep(4000);
-			belokKanan();
-			current_node = mem[Parent].Mid;
-		}
-		//tidak punya node lurus, langsung ke kiri
+	int prev_node = current_node;
+	current_node = mem[current_node].Parent;
+	int Kanan = -1, Kiri = -1, Lurus = -1;
+	if (prev_node == mem[current_node].Right) {
+		if (cekKanan()) {
+			push(1);
+			Lurus = Aloc(node_id, current_node);
+			Add_Anak(current_node, Kiri, Lurus, Kanan);
+			current_node = mem[current_node].Mid;
+			node_id++;
+			}
 		else {
-			lurus();
-			current_node = mem[Parent].Left;
+			setMotorSpeed(leftMotor, -58);
+			setMotorSpeed(rightMotor, -29);
+			sleep(1000);
+
+			if (cekLurus()) {
+			push(0);
+			Kiri = Aloc(node_id, current_node);
+			Add_Anak(current_node, Kiri, Lurus, Kanan);
+			current_node = mem[current_node].Left;
+			node_id++;
+			}
+			else {
+				if (cekKiri()) {
+					pop();
+					back = 1;
+				}
+			}
 		}
 	}
-	//Dari tengah (lurus)
-	else if (mem[Parent].Mid == current_node) {
-		belokKanan();
-		current_node = mem[Parent].Left;
+	else if (prev_node == mem[current_node].Mid) {
+		if (cekKanan()) {
+			push(0);
+			Kiri = Aloc(node_id, current_node);
+			Add_Anak(current_node, Kiri, Lurus, Kanan);
+			current_node = mem[current_node].Mid;
+			node_id++;
+			}
+			else {
+				setMotorSpeed(leftMotor, -60);
+				setMotorSpeed(rightMotor, -29);
+				sleep(1000);
+
+				if (cekLurus()) {
+						pop();
+						back = 1;
+				}
+			}
 	}
-	//stop
-	else {
-		setMotorSpeed(leftMotor, 50);
-		setMotorSpeed(rightMotor, -50);
+	else if (cekKanan()) {
+						pop();
+						back = 1;
 	}
 }
 
 void Next_Node_Parent() {
-
-	if (mem[current_node].Right != -1) {
-		belokKanan();
+	int Kanan = -1, Kiri = -1, Lurus = -1;
+	if (cekKanan()) {
+		push(2);
+		Kanan = Aloc(node_id, current_node);
+		Add_Anak(current_node, Kiri, Lurus, Kanan);
 		current_node = mem[current_node].Right;
-	}
-	//tidak punya node kanan, langsung lurus
-	else if (mem[current_node].Mid != -1) {
-		lurus();
-		current_node = mem[current_node].Mid;
+		node_id++;
 	}
 	else {
-		belokKiri();
-		current_node = mem[current_node].Left;
+		setMotorSpeed(leftMotor, -60);
+		setMotorSpeed(rightMotor, -30);
+		sleep(1000);
+
+		if (cekLurus()) {
+		push(1);
+		Lurus = Aloc(node_id, current_node);
+		Add_Anak(current_node, Kiri, Lurus, Kanan);
+		current_node = mem[current_node].Mid;
+		node_id++;
+		}
+		else {
+			setMotorSpeed(leftMotor, -60);
+			setMotorSpeed(rightMotor, -60);
+			sleep(1000);
+
+			if (cekKiri()) {
+			push(0);
+			Kiri = Aloc(node_id, current_node);
+			Add_Anak(current_node, Kiri, Lurus, Kanan);
+			current_node = mem[current_node].Left;
+			node_id++;
+			}
+			else {
+				setMotorSpeed(leftMotor, 0);
+				setMotorSpeed(rightMotor, -55);
+				sleep(1000);
+			}
+		}
 	}
+	//tidak punya node kanan, langsung lurus
 }
 
 task main()
 {
+	for(int index=0; index<16; index++)
+	{
+		sMem.data[index].Id = 999;
+	}
+	sMem.data[0].Id = 999;
+	sMem.top = 1;
 	node_id = 0;
 	current_node = 0;
 	back = 0;
-	//maju dikit biar kaga kena biru
 	int i;
 	for (i = 0; i < 100; i++) {
 		mem[i].Id = -1;
@@ -357,16 +325,9 @@ task main()
 		mem[i].Right = -1;
 		mem[i].Parent = -1;
 	}
-	setMotorSpeed(leftMotor, 50);
-	setMotorSpeed(rightMotor, 50);
-	sleep(3000);
-	setMotorSpeed(rightMotor, 50);
-	setMotorSpeed(leftMotor, 0);
-	sleep(300);
 
-	current_node = Aloc(node_id, Nil);
-	node_id++;
-	//mulai algoritma gerak warna
+	//maju dikit biar kaga kena bir
+	//setMotorSpeed(leftMotor, wna
 	gerak();
+	gerakKembali();
 }
-
