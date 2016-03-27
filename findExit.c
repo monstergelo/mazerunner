@@ -7,13 +7,15 @@ int current_node;
 int back;
 //fungsi=======================================================
 //listPsudo--------------------------------------------------
-void Add_Anak(int Id, int L, int M, int R)
-/*Menambahkan anak kiri, kanan, dan tengah ke sebuah node Id,
-*/
+void Add_Anak_Kanan(int Id, int A)
 {
-	setLeft(&mem[Id], L);
-	setMid(&mem[Id], M);
-	setRight(&mem[Id], R);
+	setRight(&mem[Id], A);
+}
+void Add_Anak_Lurus(int Id, int A) {
+	setMid(&mem[Id], A);
+}
+void Add_Anak_Kiri(int Id, int A) {
+	setLeft(&mem[Id], A);
 }
 
 int Aloc(int Id, int Pa)
@@ -53,7 +55,9 @@ void Push(int i)
 int Pop()
 {
 	sMem.top= (sMem.top) - 1;
-	return sMem.data[sMem.top].Id;
+	int result = sMem.data[sMem.top].Id;
+	sMem.data[sMem.top].Id = 999;
+	return result;
 }
 
 void backStep()
@@ -121,8 +125,8 @@ void gerak()
 				Next_Node_Parent();
 			}
 			else {
-				Next_Node();
 				back = 0;
+				Next_Node();
 			}
 		}
 		else if(getColorName(colorSensor)==colorRed)
@@ -158,6 +162,7 @@ void gerakKembali()
 		{
 			maju();
 		}
+		sleep(50);
 	}
 }
 
@@ -165,9 +170,9 @@ void gerakKembali()
 bool cekLurus()
 {
 	bool is_node = false;
-	setMotorSpeed(leftMotor, 63);
+	setMotorSpeed(leftMotor, 64);
 	setMotorSpeed(rightMotor, 60);
-	sleep(680);
+	sleep(700);
 	if(getColorName(colorSensor)==colorBlack)
 	{
 		is_node = true;
@@ -210,12 +215,12 @@ bool cekKiri()
 void Next_Node() {
 	int prev_node = current_node;
 	current_node = mem[current_node].Parent;
-	int Kanan = -1, Kiri = -1, Lurus = -1;
+	int Kiri = -1, Lurus = -1;
 	if (prev_node == mem[current_node].Right) {
 		if (cekKanan()) {
 			Push(1);
 			Lurus = Aloc(node_id, current_node);
-			Add_Anak(current_node, Kiri, Lurus, Kanan);
+			Add_Anak_Lurus(current_node, Lurus);
 			current_node = mem[current_node].Mid;
 			node_id++;
 			}
@@ -227,7 +232,7 @@ void Next_Node() {
 			if (cekLurus()) {
 			Push(0);
 			Kiri = Aloc(node_id, current_node);
-			Add_Anak(current_node, Kiri, Lurus, Kanan);
+			Add_Anak_Kiri(current_node, Kiri);
 			current_node = mem[current_node].Left;
 			node_id++;
 			}
@@ -243,7 +248,7 @@ void Next_Node() {
 		if (cekKanan()) {
 			Push(0);
 			Kiri = Aloc(node_id, current_node);
-			Add_Anak(current_node, Kiri, Lurus, Kanan);
+			Add_Anak_Kiri(current_node, Kiri);
 			current_node = mem[current_node].Left;
 			node_id++;
 			}
@@ -269,7 +274,7 @@ void Next_Node_Parent() {
 	if (cekKanan()) {
 		Push(2);
 		Kanan = Aloc(node_id, current_node);
-		Add_Anak(current_node, Kiri, Lurus, Kanan);
+		Add_Anak_Kanan(current_node, Kanan);
 		current_node = mem[current_node].Right;
 		node_id++;
 	}
@@ -281,7 +286,7 @@ void Next_Node_Parent() {
 		if (cekLurus()) {
 		Push(1);
 		Lurus = Aloc(node_id, current_node);
-		Add_Anak(current_node, Kiri, Lurus, Kanan);
+		Add_Anak_Lurus(current_node, Lurus);
 		current_node = mem[current_node].Mid;
 		node_id++;
 		}
@@ -293,7 +298,7 @@ void Next_Node_Parent() {
 			if (cekKiri()) {
 			Push(0);
 			Kiri = Aloc(node_id, current_node);
-			Add_Anak(current_node, Kiri, Lurus, Kanan);
+			Add_Anak_Kiri(current_node, Kiri);
 			current_node = mem[current_node].Left;
 			node_id++;
 			}
@@ -329,6 +334,8 @@ task main()
 
 	//maju dikit biar kaga kena bir
 	//setMotorSpeed(leftMotor, wna
+	current_node = Aloc(node_id, 0);
+	node_id++;
 	gerak();
 	gerakKembali();
 }
