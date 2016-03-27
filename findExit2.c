@@ -73,7 +73,7 @@ void maju()
 {
 	float temp = (float) getColorReflected(colorSensor) *3/5  + 20;
 
-	if(getColorReflected(colorSensor) >= 96)
+	if(getColorReflected(colorSensor) >= 97)
 	{
 		motor[rightMotor]  = 30;
 		motor[leftMotor] = -20;
@@ -104,7 +104,13 @@ void gerak()
 					Next_Node_Root();
 				}
 				else {
-					putarBalik();
+					if(need_backtrack()){
+						putarBalik();
+					}
+					else
+					{
+						batas_kedalaman++;
+					}
 				}
 			}
 			else {
@@ -123,14 +129,34 @@ void gerak()
 		{
 			maju();
 		}
-		sleep(50);
 	}
 }
 
-//Sudah tidak ada lagi anak yg bisa ditelusuri pada current_node,
-//robotc kembali ke simpul sebelumnya (parent(current_node))
-void backtrack () {
-
+bool need_backtrack() {
+	int i = stack_id - 2;
+	bool cek = false;
+	int p, q;
+	while (i > 0 && !cek) {
+		p = stack[i].Id;
+		q = Turn(i+1);
+		if (q == 1) {
+			if((Mid(p) != 0) || (Left(p) != 0)) {
+				cek = true;
+			}
+		}
+		else if (q == 2) {
+			if((Right(p) != 0) || (Left(p) != 0)) {
+				cek = true;
+			}
+		}
+		else {
+			if((Right(p) != 0) || (Mid(p) != 0)) {
+				cek = true;
+			}
+		}
+		i--;
+	}
+	return cek;
 }
 
 void kill_node() {
@@ -204,6 +230,9 @@ void free_mem() {
 // Node mana lagi yang perlu dijalankan. Jika anak kanan sudah, maka selanjutnya lurus,
 //Jika lurus sudah maka selanjutnya anak kiri.
 void Next_Node() {
+	if((Right(current_node) == 0) && (Left(current_node) == 0) && (Mid(current_node) == 0)){
+		kill_node();
+	}
 	current_node = Parent(current_node);
 	int Kiri = -1, Lurus = -1;
 	if (Turn(stack_id) == 1){

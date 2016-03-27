@@ -4,7 +4,6 @@ typedef struct tNode {
 	int Left;
 	int Mid;
 	int Right;
-	int Cek;
 	int On;
 } Node;
 
@@ -26,8 +25,6 @@ int Left(int P) {return mem[P].Left;}
 int Mid(int P) {return mem[P].Mid;}
 
 int Right(int P) {return mem[P].Right;}
-
-int Cek(int P) {return mem[P].Cek;}
 
 int Turn(int S) {return stack[S-1].Turn;}
 //------------------------------------------
@@ -56,6 +53,7 @@ void Next_Node_Root();
 void Alokasi_Simpangan();
 void Next_Node();
 void Pulang();
+bool need_backtrack();
 
 //=======================================================================================
 //stack, untuk balik kembali

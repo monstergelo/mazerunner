@@ -332,8 +332,6 @@ task main()
 		mem[i].Parent = -1;
 	}
 
-	//maju dikit biar kaga kena bir
-	//setMotorSpeed(leftMotor, wna
 	current_node = Aloc(node_id, 0);
 	node_id++;
 	gerak();
