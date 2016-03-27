@@ -96,9 +96,9 @@ void maju()
 
 	if(getColorReflected(colorSensor) >= 95)
 	{
-		motor[rightMotor]  = 40;
-		motor[leftMotor] = 0;
-		sleep(500);
+		motor[rightMotor]  = 30;
+		motor[leftMotor] = -20;
+		sleep(300);
 	}
 	else
 	{
@@ -133,6 +133,7 @@ void gerak()
 		{
 			maju();
 		}
+		sleep(50);
 	}
 }
 
@@ -164,7 +165,7 @@ void gerakKembali()
 bool cekLurus()
 {
 	bool is_node = false;
-	setMotorSpeed(leftMotor, 61);
+	setMotorSpeed(leftMotor, 63);
 	setMotorSpeed(rightMotor, 60);
 	sleep(680);
 	if(getColorName(colorSensor)==colorBlack)
@@ -243,7 +244,7 @@ void Next_Node() {
 			Push(0);
 			Kiri = Aloc(node_id, current_node);
 			Add_Anak(current_node, Kiri, Lurus, Kanan);
-			current_node = mem[current_node].Mid;
+			current_node = mem[current_node].Left;
 			node_id++;
 			}
 			else {
@@ -287,7 +288,7 @@ void Next_Node_Parent() {
 		else {
 			setMotorSpeed(leftMotor, -60);
 			setMotorSpeed(rightMotor, -60);
-			sleep(1000);
+			sleep(750);
 
 			if (cekKiri()) {
 			Push(0);

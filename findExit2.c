@@ -65,7 +65,7 @@ void putarBalik()
 	setMotorSpeed(rightMotor, 0);
 	setMotorSpeed(leftMotor, 50);
 	sleep(1500);
-	kedalaman -=1;
+	kedalaman = kedalaman - 1;
 }
 
 //gerak mengikuti garis hitam
@@ -73,11 +73,11 @@ void maju()
 {
 	float temp = (float) getColorReflected(colorSensor) *3/5  + 20;
 
-	if(getColorReflected(colorSensor) >= 95)
+	if(getColorReflected(colorSensor) >= 96)
 	{
-		motor[rightMotor]  = 40;
-		motor[leftMotor] = 0;
-		sleep(500);
+		motor[rightMotor]  = 30;
+		motor[leftMotor] = -20;
+		sleep(300);
 	}
 	else
 	{
@@ -94,15 +94,14 @@ void gerak()
 	{
 		if(getColorName(colorSensor)==colorBlue)
 		{
+			Pulang();
 			break;
 		}
 		else if(getColorName(colorSensor)==colorGreen)
 		{
-
 			if (is_mundur == 0){
 				if (kedalaman < batas_kedalaman ) {
 					Next_Node_Root();
-					kedalaman += 1;
 				}
 				else {
 					putarBalik();
@@ -112,6 +111,7 @@ void gerak()
 				is_mundur = 0;
 				Next_Node();
 			}
+
 		}
 		else if(getColorName(colorSensor)==colorRed)
 		{
@@ -123,6 +123,7 @@ void gerak()
 		{
 			maju();
 		}
+		sleep(50);
 	}
 }
 
@@ -134,13 +135,13 @@ void backtrack () {
 
 void kill_node() {
 	int P = mem[current_node].Parent;
-	if (cabang == 1) {
+	if (Turn(stack_id) == 1) {
 		mem[P].Right = 0;
 	}
-	else if (cabang == 2) {
+	else if (Turn(stack_id) == 2) {
 		mem[P].Mid = 0;
 	}
-	else if (cabang == 3) {
+	else if (Turn(stack_id) == 3) {
 		mem[P].Left = 0;
 	}
 }
@@ -149,7 +150,7 @@ void kill_node() {
 bool cekLurus()
 {
 	bool is_node = false;
-	setMotorSpeed(leftMotor, 61);
+	setMotorSpeed(leftMotor, 64);
 	setMotorSpeed(rightMotor, 60);
 	sleep(700);
 	if(getColorName(colorSensor)==colorBlack)
@@ -203,7 +204,6 @@ void free_mem() {
 // Node mana lagi yang perlu dijalankan. Jika anak kanan sudah, maka selanjutnya lurus,
 //Jika lurus sudah maka selanjutnya anak kiri.
 void Next_Node() {
-
 	current_node = Parent(current_node);
 	int Kiri = -1, Lurus = -1;
 	if (Turn(stack_id) == 1){
@@ -222,7 +222,7 @@ void Next_Node() {
 				if (mem[current_node].Mid != 0) {//&& !cekKanan
 					mem[current_node].Mid = 0;
 					setMotorSpeed(leftMotor, -60);
-					setMotorSpeed(rightMotor, -29);
+					setMotorSpeed(rightMotor, -30);
 					sleep(1000);
 				}
 
@@ -254,6 +254,7 @@ void Next_Node() {
 					}
 				}
 			}
+
 	}
 	else if (Turn(stack_id) == 2) {
 		pop();
@@ -264,7 +265,7 @@ void Next_Node() {
 				node_id++;
 			}
 			kedalaman += 1;
-			current_node = mem[current_node].Mid;
+			current_node = mem[current_node].Left;
 			push(current_node, 3);
 		}
 			else {
@@ -295,30 +296,24 @@ void Next_Node() {
 	else {
 		pop();
 		if (current_node == root) {
-			cabang = 0;
 			batas_kedalaman += 1;
-				setMotorSpeed(leftMotor, 0);
-				setMotorSpeed(rightMotor, 50);
-				sleep(700);
+				setMotorSpeed(leftMotor, 10);
+				setMotorSpeed(rightMotor, 52);
+				sleep(850);
 				setMotorSpeed(leftMotor, -50);
 				setMotorSpeed(rightMotor, -50);
-				sleep(1000);
+				sleep(2000);
 				is_mundur = 0;
 		}
 		else if (cekKanan()){
 			is_mundur = 1;
 			kedalaman -=1;
-			setMotorSpeed(leftMotor, 0);
-			setMotorSpeed(rightMotor, 0);
-			sleep(1000);
 		}
 	}
 }
 
 void Next_Node_Root() {
-	setMotorSpeed(leftMotor, 0);
-			setMotorSpeed(rightMotor, 0);
-			sleep(1000);
+	is_mundur = 0;
 	int Kanan = -1, Kiri = -1, Lurus = -1;
 	if (Right(current_node) != 0 && cekKanan()) {
 		if (Right(current_node) == -1) {
@@ -326,7 +321,7 @@ void Next_Node_Root() {
 			Add_Anak_Kanan(current_node, Kanan);
 			node_id++;
 		}
-		cabang = 1;
+		kedalaman += 1;
 		current_node = Right(current_node);
 		push(current_node, 1);
 	}
@@ -343,7 +338,7 @@ void Next_Node_Root() {
 				Add_Anak_Lurus(current_node, Lurus);
 				node_id++;
 			}
-			cabang = 2;
+			kedalaman += 1;
 			current_node = Mid(current_node);
 			push(current_node, 2);
 		}
@@ -361,19 +356,51 @@ void Next_Node_Root() {
 					Add_Anak_Kiri(current_node, Kiri);
 					node_id++;
 				}
-				cabang = 3;
+				kedalaman += 1;
 				current_node = Left(current_node);
 				push(current_node, 3);
 			}
 			else {
 				mem[current_node].Left = 0;
 				setMotorSpeed(leftMotor, 0);
-				setMotorSpeed(rightMotor, -55);
-				sleep(1000);
+				setMotorSpeed(rightMotor, 0);
+				sleep(2000);
+				putarBalik();
 			}
 		}
 	}
 	//tidak punya node kanan, langsung lurus
+}
+
+void Pulang() {
+	putarBalik();
+	repeat(forever)
+	{
+		if(getColorName(colorSensor)==colorBlue)
+		{
+			break;
+		}
+		else if(getColorName(colorSensor)==colorGreen)
+		{
+				if (Turn(stack_id) == 1) {
+					cekKiri();
+					pop();
+				}
+				else if (Turn(stack_id) == 2) {
+					cekLurus();
+					pop();
+				}
+				else 	if (Turn(stack_id) == 3) {
+					cekKanan();
+					pop();
+				}
+
+		}
+		else //warna item
+		{
+			maju();
+		}
+	}
 }
 
 task main()

@@ -41,7 +41,6 @@ void setMid(Node *P, int k) { P->Mid = k;}
 
 void setRight(Node *P, int k) { P->Right = k;}
 //------------------------------------------
-
 int Aloc(int Id, int Pa);
 
 void free_mem();
@@ -52,10 +51,11 @@ bool cekLurus();
 bool cekKanan();
 bool cekKiri();
 void kill_node();
+void Next_Node_Parent();
 void Next_Node_Root();
 void Alokasi_Simpangan();
 void Next_Node();
-void Next_Node_Parent();
+void Pulang();
 
 //=======================================================================================
 //stack, untuk balik kembali
